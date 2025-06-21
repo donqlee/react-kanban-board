@@ -1,20 +1,34 @@
 'use client';
 
 import Column from '@/components/kanban/Column';
-import { getTasksByStatus } from '@/config/mockData';
+import { useTasks } from '@/hooks/useTasks';
+import type { Task, TaskStatus } from '@/@types';
 
 export default function KanbanPage() {
-  // 이벤트 핸들러들 (나중에 상태 관리에서 구현 예정)
-  const handleAddTask = (status: string) => {
-    console.log(`Add task to ${status}`);
+  const { getTasksByStatus, addQuickTask, updateTask, deleteTask } = useTasks();
+
+  // 작업 추가 핸들러
+  const handleAddTask = (status: TaskStatus) => {
+    const title = prompt('작업 제목을 입력하세요:');
+    if (title && title.trim()) {
+      addQuickTask(title.trim(), status);
+    }
   };
 
-  const handleEditTask = (task: any) => {
-    console.log('Edit task:', task);
+  // 작업 수정 핸들러
+  const handleEditTask = (task: Task) => {
+    const newTitle = prompt('새로운 제목을 입력하세요:', task.title);
+    if (newTitle && newTitle.trim() && newTitle !== task.title) {
+      updateTask(task.id, { title: newTitle.trim() });
+    }
   };
 
+  // 작업 삭제 핸들러
   const handleDeleteTask = (taskId: string) => {
-    console.log('Delete task:', taskId);
+    const confirmed = confirm('정말로 이 작업을 삭제하시겠습니까?');
+    if (confirmed) {
+      deleteTask(taskId);
+    }
   };
 
   return (
