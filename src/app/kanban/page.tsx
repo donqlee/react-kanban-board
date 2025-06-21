@@ -1,73 +1,53 @@
-import TaskCard from '@/components/kanban/TaskCard';
+'use client';
+
+import Column from '@/components/kanban/Column';
 import { getTasksByStatus } from '@/config/mockData';
 
 export default function KanbanPage() {
+  // 이벤트 핸들러들 (나중에 상태 관리에서 구현 예정)
+  const handleAddTask = (status: string) => {
+    console.log(`Add task to ${status}`);
+  };
+
+  const handleEditTask = (task: any) => {
+    console.log('Edit task:', task);
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    console.log('Delete task:', taskId);
+  };
+
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">칸반 보드</h1>
 
-        {/* 칸반 보드 기본 레이아웃 */}
+        {/* 칸반 보드 */}
         <div className="grid grid-cols-3 gap-6">
-          {/* To-Do Column */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b bg-gray-50 rounded-t-lg flex justify-between items-center">
-              <h2 className="font-semibold text-gray-700">to-do</h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                항목 추가
-              </button>
-            </div>
-            <div className="p-4 min-h-96">
-              {getTasksByStatus('to-do').map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-              {getTasksByStatus('to-do').length === 0 && (
-                <p className="text-gray-500 text-center mt-8">
-                  To-do 항목들이 여기에 표시됩니다
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* In Progress Column */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b bg-gray-50 rounded-t-lg flex justify-between items-center">
-              <h2 className="font-semibold text-gray-700">in progress</h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                항목 추가
-              </button>
-            </div>
-            <div className="p-4 min-h-96">
-              {getTasksByStatus('in-progress').map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-              {getTasksByStatus('in-progress').length === 0 && (
-                <p className="text-gray-500 text-center mt-8">
-                  진행 중인 항목들이 여기에 표시됩니다
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Done Column */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b bg-gray-50 rounded-t-lg flex justify-between items-center">
-              <h2 className="font-semibold text-gray-700">done</h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                항목 추가
-              </button>
-            </div>
-            <div className="p-4 min-h-96">
-              {getTasksByStatus('done').map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-              {getTasksByStatus('done').length === 0 && (
-                <p className="text-gray-500 text-center mt-8">
-                  완료된 항목들이 여기에 표시됩니다
-                </p>
-              )}
-            </div>
-          </div>
+          <Column
+            status="to-do"
+            title="to-do"
+            tasks={getTasksByStatus('to-do')}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+          />
+          <Column
+            status="in-progress"
+            title="in progress"
+            tasks={getTasksByStatus('in-progress')}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+          />
+          <Column
+            status="done"
+            title="done"
+            tasks={getTasksByStatus('done')}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+          />
         </div>
       </div>
     </main>
