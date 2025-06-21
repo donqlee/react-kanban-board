@@ -1,10 +1,11 @@
+import TaskCard from '@/components/kanban/TaskCard';
+import { getTasksByStatus } from '@/config/mockData';
+
 export default function KanbanPage() {
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          돈큐 칸반 보드
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">칸반 보드</h1>
 
         {/* 칸반 보드 기본 레이아웃 */}
         <div className="grid grid-cols-3 gap-6">
@@ -17,9 +18,14 @@ export default function KanbanPage() {
               </button>
             </div>
             <div className="p-4 min-h-96">
-              <p className="text-gray-500 text-center mt-8">
-                To-do 항목들이 여기에 표시됩니다
-              </p>
+              {getTasksByStatus('to-do').map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+              {getTasksByStatus('to-do').length === 0 && (
+                <p className="text-gray-500 text-center mt-8">
+                  To-do 항목들이 여기에 표시됩니다
+                </p>
+              )}
             </div>
           </div>
 
@@ -32,9 +38,14 @@ export default function KanbanPage() {
               </button>
             </div>
             <div className="p-4 min-h-96">
-              <p className="text-gray-500 text-center mt-8">
-                진행 중인 항목들이 여기에 표시됩니다
-              </p>
+              {getTasksByStatus('in-progress').map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+              {getTasksByStatus('in-progress').length === 0 && (
+                <p className="text-gray-500 text-center mt-8">
+                  진행 중인 항목들이 여기에 표시됩니다
+                </p>
+              )}
             </div>
           </div>
 
@@ -47,9 +58,14 @@ export default function KanbanPage() {
               </button>
             </div>
             <div className="p-4 min-h-96">
-              <p className="text-gray-500 text-center mt-8">
-                완료된 항목들이 여기에 표시됩니다
-              </p>
+              {getTasksByStatus('done').map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+              {getTasksByStatus('done').length === 0 && (
+                <p className="text-gray-500 text-center mt-8">
+                  완료된 항목들이 여기에 표시됩니다
+                </p>
+              )}
             </div>
           </div>
         </div>
