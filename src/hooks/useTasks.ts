@@ -101,14 +101,6 @@ export function useTasks() {
     updateTask(taskId, { status: newStatus });
   };
 
-  // 빠른 작업 추가 (제목만으로)
-  const addQuickTask = (title: string, status: TaskStatus = 'to-do'): Task => {
-    return addTask({
-      title,
-      status,
-    });
-  };
-
   return {
     tasks,
     getTasksByStatus,
@@ -116,6 +108,5 @@ export function useTasks() {
     updateTask,
     deleteTask,
     moveTask,
-    addQuickTask,
   };
 }
