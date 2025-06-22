@@ -1,58 +1,139 @@
+'use client';
+
+import { useState } from 'react';
+import Column from '@/components/kanban/Column';
+import TaskModal from '@/components/kanban/TaskModal';
+import { useTasks } from '@/hooks/useTasks';
+import type {
+  Task,
+  TaskStatus,
+  CreateTaskInput,
+  UpdateTaskInput,
+} from '@/@types';
+
 export default function KanbanPage() {
+  const {
+    getTasksByStatus,
+    addTask,
+    updateTask,
+    deleteTask,
+    moveTaskToPosition,
+  } = useTasks();
+
+  // 모달 상태 관리
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit' | 'delete';
+    task?: Task;
+    initialStatus?: TaskStatus;
+  }>({
+    isOpen: false,
+    mode: 'add',
+  });
+
+  // 작업 추가 핸들러
+  const handleAddTask = (status: TaskStatus) => {
+    setModalState({
+      isOpen: true,
+      mode: 'add',
+      initialStatus: status,
+    });
+  };
+
+  // 작업 수정 핸들러
+  const handleEditTask = (task: Task) => {
+    setModalState({
+      isOpen: true,
+      mode: 'edit',
+      task,
+    });
+  };
+
+  // 작업 삭제 핸들러
+  const handleDeleteTask = (taskId: string) => {
+    const task = [
+      ...getTasksByStatus('to-do'),
+      ...getTasksByStatus('in-progress'),
+      ...getTasksByStatus('done'),
+    ].find((t) => t.id === taskId);
+
+    if (task) {
+      setModalState({
+        isOpen: true,
+        mode: 'delete',
+        task,
+      });
+    }
+  };
+
+  // 모달 닫기
+  const handleCloseModal = () => {
+    setModalState({
+      isOpen: false,
+      mode: 'add',
+    });
+  };
+
+  // 모달에서 작업 생성/수정
+  const handleModalSubmit = (data: CreateTaskInput | UpdateTaskInput) => {
+    if (modalState.mode === 'add') {
+      addTask(data as CreateTaskInput);
+    } else if (modalState.mode === 'edit' && modalState.task) {
+      updateTask(modalState.task.id, data as UpdateTaskInput);
+    }
+  };
+
+  // 모달에서 작업 삭제
+  const handleModalDelete = (taskId: string) => {
+    deleteTask(taskId);
+  };
+
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          돈큐 칸반 보드
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">칸반 보드</h1>
 
-        {/* 칸반 보드 기본 레이아웃 */}
+        {/* 칸반 보드 */}
         <div className="grid grid-cols-3 gap-6">
-          {/* To-Do Column */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b bg-gray-50 rounded-t-lg flex justify-between items-center">
-              <h2 className="font-semibold text-gray-700">to-do</h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                항목 추가
-              </button>
-            </div>
-            <div className="p-4 min-h-96">
-              <p className="text-gray-500 text-center mt-8">
-                To-do 항목들이 여기에 표시됩니다
-              </p>
-            </div>
-          </div>
-
-          {/* In Progress Column */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b bg-gray-50 rounded-t-lg flex justify-between items-center">
-              <h2 className="font-semibold text-gray-700">in progress</h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                항목 추가
-              </button>
-            </div>
-            <div className="p-4 min-h-96">
-              <p className="text-gray-500 text-center mt-8">
-                진행 중인 항목들이 여기에 표시됩니다
-              </p>
-            </div>
-          </div>
-
-          {/* Done Column */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b bg-gray-50 rounded-t-lg flex justify-between items-center">
-              <h2 className="font-semibold text-gray-700">done</h2>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                항목 추가
-              </button>
-            </div>
-            <div className="p-4 min-h-96">
-              <p className="text-gray-500 text-center mt-8">
-                완료된 항목들이 여기에 표시됩니다
-              </p>
-            </div>
-          </div>
+          <Column
+            status="to-do"
+            title="to-do"
+            tasks={getTasksByStatus('to-do')}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+            onMoveTaskToPosition={moveTaskToPosition}
+          />
+          <Column
+            status="in-progress"
+            title="in progress"
+            tasks={getTasksByStatus('in-progress')}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+            onMoveTaskToPosition={moveTaskToPosition}
+          />
+          <Column
+            status="done"
+            title="done"
+            tasks={getTasksByStatus('done')}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+            onDeleteTask={handleDeleteTask}
+            onMoveTaskToPosition={moveTaskToPosition}
+          />
         </div>
+
+        {/* 범용 작업 모달 */}
+        <TaskModal
+          isOpen={modalState.isOpen}
+          mode={modalState.mode}
+          task={modalState.task}
+          initialStatus={modalState.initialStatus}
+          onClose={handleCloseModal}
+          onSubmit={handleModalSubmit}
+          onDelete={handleModalDelete}
+        />
       </div>
     </main>
   );

@@ -5,8 +5,7 @@ export type TaskStatus = 'to-do' | 'in-progress' | 'done';
 export interface Task {
   id: string; // 이슈번호 (예: ISSUE-104)
   title: string; // 이슈 제목
-  description?: string; // 상세 설명 (선택사항)
-  assignee?: string; // 담당자 (예: 조르디, 어피치)
+  assignee: string; // 담당자 (예: 조르디, 어피치)
   status: TaskStatus; // 현재 상태
   createdAt: Date; // 생성일시
   updatedAt: Date; // 최근 변경일시
@@ -27,22 +26,19 @@ export interface KanbanBoard {
 // 작업 생성 시 사용할 타입 (ID와 날짜는 자동 생성)
 export interface CreateTaskInput {
   title: string;
-  description?: string;
-  assignee?: string;
+  assignee: string;
   status: TaskStatus;
 }
 
 // 작업 수정 시 사용할 타입
 export interface UpdateTaskInput {
-  title?: string;
-  description?: string;
-  assignee?: string;
-  status?: TaskStatus;
+  title: string;
+  assignee: string;
+  status: TaskStatus;
 }
 
 // 모달이나 폼에서 사용할 타입
 export interface TaskFormData {
   title: string;
-  description: string;
   assignee: string;
 }
