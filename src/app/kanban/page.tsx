@@ -12,8 +12,13 @@ import type {
 } from '@/@types';
 
 export default function KanbanPage() {
-  const { getTasksByStatus, addTask, updateTask, deleteTask, moveTask } =
-    useTasks();
+  const {
+    getTasksByStatus,
+    addTask,
+    updateTask,
+    deleteTask,
+    moveTaskToPosition,
+  } = useTasks();
 
   // 모달 상태 관리
   const [modalState, setModalState] = useState<{
@@ -97,7 +102,7 @@ export default function KanbanPage() {
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
-            onMoveTask={moveTask}
+            onMoveTaskToPosition={moveTaskToPosition}
           />
           <Column
             status="in-progress"
@@ -106,7 +111,7 @@ export default function KanbanPage() {
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
-            onMoveTask={moveTask}
+            onMoveTaskToPosition={moveTaskToPosition}
           />
           <Column
             status="done"
@@ -115,7 +120,7 @@ export default function KanbanPage() {
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
-            onMoveTask={moveTask}
+            onMoveTaskToPosition={moveTaskToPosition}
           />
         </div>
 

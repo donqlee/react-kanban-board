@@ -101,6 +101,82 @@ export function useTasks() {
     updateTask(taskId, { status: newStatus });
   };
 
+  // 작업 순서 변경 (같은 컬럼 내에서)
+  const reorderTasks = (
+    sourceIndex: number,
+    destinationIndex: number,
+    status: TaskStatus
+  ): void => {
+    const columnTasks = getTasksByStatus(status);
+    const otherTasks = tasks.filter((task) => task.status !== status);
+
+    // 배열에서 요소 이동
+    const [movedTask] = columnTasks.splice(sourceIndex, 1);
+    columnTasks.splice(destinationIndex, 0, movedTask);
+
+    // 전체 작업 배열 업데이트
+    const updatedTasks = [...otherTasks, ...columnTasks];
+    setTasks(updatedTasks);
+    saveTasksToStorage(updatedTasks);
+  };
+
+  const moveTaskToPosition = (
+    taskId: string,
+    targetStatus: TaskStatus,
+    targetIndex?: number
+  ): void => {
+    const taskToMove = tasks.find((t) => t.id === taskId);
+    if (!taskToMove) return;
+
+    // 이동 전 원래 컬럼 작업 배열
+    const currentColumnTasks = tasks.filter(
+      (t) => t.status === taskToMove.status
+    );
+    // 이동 전 원래 컬럼 내 인덱스
+    const sourceIndex = currentColumnTasks.findIndex((t) => t.id === taskId);
+
+    // 이동할 작업 제외한 모든 작업들
+    const filteredTasks = tasks.filter((t) => t.id !== taskId);
+
+    // 타겟 컬럼의 작업들 (이동할 작업은 빠진 상태)
+    const targetColumnTasks = filteredTasks.filter(
+      (t) => t.status === targetStatus
+    );
+
+    // 같은 컬럼이면 보정 필요!
+    let insertIndex =
+      targetIndex !== undefined ? targetIndex : targetColumnTasks.length;
+    if (
+      taskToMove.status === targetStatus &&
+      sourceIndex !== -1 &&
+      insertIndex > sourceIndex
+    ) {
+      // 뺐을 때 index 하나 감소되므로 -1
+      insertIndex -= 1;
+    }
+
+    // 상태 및 날짜 갱신
+    const updatedTask = {
+      ...taskToMove,
+      status: targetStatus,
+      updatedAt: new Date(),
+    };
+
+    // 타겟 컬럼 배열에 insert
+    targetColumnTasks.splice(insertIndex, 0, updatedTask);
+
+    // 나머지
+    const otherColumnTasks = filteredTasks.filter(
+      (t) => t.status !== targetStatus
+    );
+
+    // 완성
+    const finalTasks = [...otherColumnTasks, ...targetColumnTasks];
+
+    setTasks(finalTasks);
+    saveTasksToStorage(finalTasks);
+  };
+
   return {
     tasks,
     getTasksByStatus,
@@ -108,5 +184,7 @@ export function useTasks() {
     updateTask,
     deleteTask,
     moveTask,
+    reorderTasks,
+    moveTaskToPosition,
   };
 }
