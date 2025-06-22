@@ -11,8 +11,18 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
+  // 드래그 시작 핸들러
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('text/plain', task.id);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow">
+    <div
+      draggable
+      onDragStart={handleDragStart}
+      className="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow cursor-move"
+    >
       {/* 이슈번호와 버튼들 */}
       <div className="flex justify-between items-start mb-2">
         <span className="text-sm font-semibold text-gray-600">{task.id}</span>
@@ -38,20 +48,9 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
       </h3>
 
       {/* 담당자와 날짜 */}
-      <div className="space-y-1">
-        {task.assignee && (
-          <div className="flex justify-between items-center text-xs text-gray-500">
-            <span>{task.assignee}</span>
-            <span>{formatDate(task.createdAt)}</span>
-          </div>
-        )}
-        {!task.assignee && (
-          <div className="text-right">
-            <span className="text-xs text-gray-500">
-              {formatDate(task.createdAt)}
-            </span>
-          </div>
-        )}
+      <div className="flex justify-between items-center text-xs text-gray-500">
+        <span>{task.assignee}</span>
+        <span>{formatDate(task.createdAt)}</span>
       </div>
     </div>
   );

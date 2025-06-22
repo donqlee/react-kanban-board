@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { Task, TaskStatus } from '@/@types';
 import TaskCard from './TaskCard';
 
@@ -10,6 +11,7 @@ interface ColumnProps {
   onAddTask?: (status: TaskStatus) => void;
   onEditTask?: (task: Task) => void;
   onDeleteTask?: (taskId: string) => void;
+  onMoveTask?: (taskId: string, newStatus: TaskStatus) => void;
 }
 
 export default function Column({
@@ -19,13 +21,47 @@ export default function Column({
   onAddTask,
   onEditTask,
   onDeleteTask,
+  onMoveTask,
 }: ColumnProps) {
+  const [isDragOver, setIsDragOver] = useState(false);
+
   const handleAddClick = () => {
     onAddTask?.(status);
   };
 
+  // 드래그 오버 핸들러
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setIsDragOver(true);
+  };
+
+  // 드래그 리브 핸들러
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  // 드롭 핸들러
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+
+    const taskId = e.dataTransfer.getData('text/plain');
+    if (taskId && onMoveTask) {
+      onMoveTask(taskId, status);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div
+      className={`bg-white rounded-lg shadow-sm border transition-colors ${
+        isDragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-200'
+      }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       {/* 컬럼 헤더 */}
       <div className="p-4 border-b bg-gray-50 rounded-t-lg flex justify-between items-center">
         <h2 className="font-semibold text-gray-700">{title}</h2>
